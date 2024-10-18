@@ -10,6 +10,9 @@ app.use(cors())
 app.use(express.json())
 app.use(express.urlencoded({ extended: false }))
 
+const AuthRouter = require('./routes/AuthRouter')
+app.use('/auth', AuthRouter)
+
 app.use('/', (req, res) => {
   res.send(`Connected!`)
 })
