@@ -21,6 +21,9 @@ app.use("/Posts", PostRouter)
 const ActivitiesRouter = require("./routes/ActivitiesRouter")
 app.use("/activities", ActivitiesRouter)
 
+const CommentRouter = require("./routes/CommentRouter")
+app.use("/comment", CommentRouter)
+
 app.use("/", (req, res) => {
   res.send(`Connected!`)
 })
