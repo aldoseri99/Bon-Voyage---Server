@@ -37,8 +37,10 @@ const Register = async (req, res) => {
 
 const Login = async (req, res) => {
   try {
-    const { username, password } = req.body
-    const user = await User.findOne({ username })
+    const { email, password } = req.body
+    const user = await User.findOne({
+      $or: [{ email: email }, { username: email }]
+    })
     let matched = await middleware.comparePassword(
       user.passwordDigest,
       password
