@@ -26,7 +26,7 @@ const postSchema = new mongoose.Schema(
       required: true,
     },
     temperature: {
-      type: String,
+      type: Number,
       required: true,
     },
     date: {
