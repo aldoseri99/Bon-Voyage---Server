@@ -22,6 +22,10 @@ const activitiesSchema = new mongoose.Schema(
     },
     photos: {
       type: [String],
+    },
+    post: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "Post",
       required: true,
     },
   },
