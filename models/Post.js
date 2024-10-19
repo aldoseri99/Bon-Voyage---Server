@@ -33,13 +33,13 @@ const postSchema = new mongoose.Schema(
       type: Date,
       default: Date.now,
     },
+    country: {
+      type: String,
+      required: true,
+    },
     environment: {
       type: String,
       enum: ["City", "Nature", "Beach", "Mountain", "Desert"],
-      required: true,
-    },
-    country: {
-      type: String,
       required: true,
     },
     photos: {
