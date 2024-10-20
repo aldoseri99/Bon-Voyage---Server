@@ -18,7 +18,7 @@ upload = multer({ storage: storage })
 
 const GetPost = async (req, res) => {
   try {
-    const post = await Post.find({}).populate("activities")
+    const post = await Post.find({}).populate("activities").populate("comments")
     res.send(post)
   } catch (error) {
     throw error
