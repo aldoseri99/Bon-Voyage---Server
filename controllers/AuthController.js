@@ -50,9 +50,11 @@ const Login = async (req, res) => {
         id: user._id,
         username: user.username,
         name: user.name,
-        email: user.email
+        email: user.email,
+        followings: user.followings
       }
       let token = middleware.createToken(payload)
+
       return res.send({
         user: payload,
         token
@@ -78,7 +80,9 @@ const UpdatePassword = async (req, res) => {
         passwordDigest
       })
       let payload = {
-        id: user.id,
+        id: user._id,
+        username: user.username,
+        name: user.name,
         email: user.email
       }
       return res.send({ status: 'Password Updated!', user: payload })
@@ -103,7 +107,9 @@ const UpdateUser = async (req, res) => {
     })
 
     let payload = {
-      id: user.id,
+      id: user._id,
+      username: user.username,
+      name: user.name,
       email: user.email
     }
     return res.send({ status: 'User Updated!', user: payload })
@@ -121,10 +127,36 @@ const CheckSession = async (req, res) => {
   res.send(payload)
 }
 
+const follow = async (req, res) => {
+  try {
+    let user = await User.findByIdAndUpdate(req.params.user_id, {
+      followings: req.body
+    })
+    let payload = {
+      id: user._id,
+      username: user.username,
+      name: user.name,
+      email: user.email,
+      followings: user.followings
+    }
+
+    return res.send({ status: 'User Followed!', user: payload })
+  } catch (error) {}
+}
+
+const unfollow = async (req, res) => {}
+
+const getAllUsers = async (req, res) => {
+  let users = await User.find()
+  res.send({ users })
+}
+
 module.exports = {
   Register,
   Login,
   UpdatePassword,
   UpdateUser,
-  CheckSession
+  CheckSession,
+  follow,
+  getAllUsers
 }
