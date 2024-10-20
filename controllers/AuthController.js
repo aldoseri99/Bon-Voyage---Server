@@ -11,15 +11,14 @@ const Register = async (req, res) => {
     let existingUser = await User.findOne({ email })
     let existingUsername = await User.findOne({ username })
     if (existingUser) {
-      return res
-        .status(400)
-        .send('A user with that email has already been registered!')
+      return res.send({
+        message: 'A user with that email has already been registered!'
+      })
     } else if (existingUsername) {
-      return res
-        .status(400)
-        .send('A user with that username has already been registered!')
+      return res.send({
+        message: 'A user with that username has already been registered!'
+      })
     } else {
-      // Creates a new user
       const user = await User.create({
         name,
         email,
@@ -41,6 +40,11 @@ const Login = async (req, res) => {
     const user = await User.findOne({
       $or: [{ email: email }, { username: email }]
     })
+    if (!user) {
+      return res.send({
+        message: 'No user with that email or username was found!'
+      })
+    }
     let matched = await middleware.comparePassword(
       user.passwordDigest,
       password
@@ -58,6 +62,10 @@ const Login = async (req, res) => {
       return res.send({
         user: payload,
         token
+      })
+    } else {
+      return res.send({
+        message: 'Incorrect password!'
       })
     }
   } catch (error) {
