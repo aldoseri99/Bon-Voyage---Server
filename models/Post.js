@@ -51,6 +51,7 @@ const postSchema = new mongoose.Schema(
       default: 0,
     },
     activities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activities" }],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   },
   { timestamps: true }
 )

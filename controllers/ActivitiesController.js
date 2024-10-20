@@ -1,4 +1,5 @@
 const Activities = require("../models/Activities")
+const Post = require("../models/Post")
 const multer = require("multer")
 const path = require("path")
 
@@ -20,12 +21,11 @@ const GetActivities = async (req, res) => {
     const activities = await Activities.find({}).populate("post")
     res.send(activities)
   } catch (error) {
-    res.status(500).send({ error: error.message })
+    res.send({ error: error.message })
   }
 }
 
 const CreateActivities = async (req, res) => {
-  console.log("CreateActivities called")
   try {
     const { name, place, cost, rate, post } = req.body
     const photos = req.files ? req.files.map((file) => file.filename) : []
@@ -41,9 +41,9 @@ const CreateActivities = async (req, res) => {
 
     await Post.findByIdAndUpdate(post, { $push: { activities: activity._id } })
 
-    res.status(201).send(activity)
+    res.send(activity)
   } catch (error) {
-    res.status(500).send({ error: error.message })
+    res.send({ error: error.message })
   }
 }
 
@@ -70,7 +70,7 @@ const UpdateActivities = async (req, res) => {
 
     res.send(updatedActivity)
   } catch (error) {
-    res.status(500).send({ error: error.message })
+    res.send({ error: error.message })
   }
 }
 
@@ -89,7 +89,7 @@ const DeleteActivities = async (req, res) => {
       status: "Ok",
     })
   } catch (error) {
-    res.status(500).send({ error: error.message })
+    res.send({ error: error.message })
   }
 }
 

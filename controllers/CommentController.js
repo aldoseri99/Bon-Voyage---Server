@@ -1,9 +1,12 @@
 const Comment = require("../models/Comment")
+const Post = require("../models/Post")
 
 const GetComments = async (req, res) => {
   try {
     const { postId } = req.params
-    const comments = await Comment.find({ post: postId }).populate("user")
+    const comments = await Comment.find({ post: postId })
+      .populate("user")
+      .populate("post")
     res.send(comments)
   } catch (error) {
     res.send({ error: error.message })
@@ -20,6 +23,8 @@ const CreateComment = async (req, res) => {
       post,
       user,
     })
+
+    await Post.findByIdAndUpdate(post, { $push: { comments: comment._id } })
 
     res.send(comment)
   } catch (error) {
