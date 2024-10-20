@@ -1,16 +1,16 @@
-const Post = require("../models/Post")
-const multer = require("multer")
-const path = require("path")
+const Post = require('../models/Post')
+const multer = require('multer')
+const path = require('path')
 
 // Set up multer storage (as shown previously)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./public/uploadPost/")
+    cb(null, './public/uploadPost/')
   },
   filename: (req, file, cb) => {
-    filename = "test"
+    filename = 'test'
     cb(null, Date.now() + file.originalname)
-  },
+  }
 })
 
 // Initialize multer
@@ -18,7 +18,7 @@ upload = multer({ storage: storage })
 
 const GetPost = async (req, res) => {
   try {
-    const post = await Post.find({}).populate("activities").populate("comments")
+    const post = await Post.find({}).populate('activities').populate('comments')
     res.send(post)
   } catch (error) {
     throw error
@@ -37,7 +37,7 @@ const CreatePost = async (req, res) => {
       date,
       country,
       environment,
-      like,
+      like
     } = req.body
 
     const photos = req.files ? req.files.map((file) => file.filename) : []
@@ -53,7 +53,7 @@ const CreatePost = async (req, res) => {
       country,
       environment,
       like,
-      photos,
+      photos
     })
     res.send(post)
   } catch (error) {
@@ -71,11 +71,11 @@ const UpdatePost = async (req, res) => {
 
     const updatedPost = await Post.findByIdAndUpdate(postId, updates, {
       new: true,
-      runValidators: true,
+      runValidators: true
     })
 
     if (!updatedPost) {
-      return res.send({ msg: "Post not found" })
+      return res.send({ msg: 'Post not found' })
     }
 
     res.send(updatedPost)
@@ -88,10 +88,21 @@ const DeletePost = async (req, res) => {
   try {
     await Post.deleteOne({ _id: req.params.post_id })
     res.send({
-      msg: "Post Deleted",
+      msg: 'Post Deleted',
       payload: req.params.post_id,
-      status: "Ok",
+      status: 'Ok'
     })
+  } catch (error) {
+    throw error
+  }
+}
+
+const PostDetail = async (req, res) => {
+  try {
+    const post = await Post.find({ _id: req.params.post_id })
+      .populate('activities')
+      .populate('comments')
+    res.send(post)
   } catch (error) {
     throw error
   }
@@ -102,4 +113,5 @@ module.exports = {
   CreatePost,
   UpdatePost,
   DeletePost,
+  PostDetail
 }
