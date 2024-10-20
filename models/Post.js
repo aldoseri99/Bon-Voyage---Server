@@ -35,16 +35,13 @@ const postSchema = new mongoose.Schema(
     },
     country: {
       type: String,
-      required: true,
     },
     environment: {
       type: String,
       enum: ["City", "Nature", "Beach", "Mountain", "Desert"],
-      required: true,
     },
     photos: {
-      type: [String],
-      required: true,
+      type: [String]
     },
     like: {
       type: Number,

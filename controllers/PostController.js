@@ -31,35 +31,26 @@ const CreatePost = async (req, res) => {
       title,
       review,
       cost,
-      rate,
-      weather,
-      temperature,
-      date,
-      country,
-      environment,
-      like,
-    } = req.body
+      rate
+    } = req.body;
 
-    const photos = req.files ? req.files.map((file) => file.filename) : []
+    // Use req.file for a single file upload
+    const photos = req.file ? [req.file.filename] : []; // Ensure this matches your front-end
 
     const post = await Post.create({
       title,
       review,
       cost,
       rate,
-      weather,
-      temperature,
-      date,
-      country,
-      environment,
-      like,
-      photos,
-    })
-    res.send(post)
+      photos
+    });
+    res.send(post);
   } catch (error) {
-    throw error
+    console.error("Error creating post:", error); // Log error details
+    res.status(500).send({ error: error.message }); // Send error response
   }
 }
+
 
 const UpdatePost = async (req, res) => {
   try {
