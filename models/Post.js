@@ -26,20 +26,20 @@ const postSchema = new mongoose.Schema(
       required: true,
     },
     temperature: {
-      type: String,
+      type: Number,
       required: true,
     },
     date: {
       type: Date,
       default: Date.now,
     },
+    country: {
+      type: String,
+      required: true,
+    },
     environment: {
       type: String,
       enum: ["City", "Nature", "Beach", "Mountain", "Desert"],
-      required: true,
-    },
-    country: {
-      type: String,
       required: true,
     },
     photos: {
@@ -50,6 +50,7 @@ const postSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    activities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activities" }],
   },
   { timestamps: true }
 )
