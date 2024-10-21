@@ -22,7 +22,6 @@ const postSchema = new mongoose.Schema(
     },
     weather: {
       type: String,
-      enum: ["Sunny", "Cloudy", "Rainy", "Snowy", "Windy"],
       required: true,
     },
     temperature: {
@@ -39,12 +38,9 @@ const postSchema = new mongoose.Schema(
     },
     environment: {
       type: String,
-      enum: ["City", "Nature", "Beach", "Mountain", "Desert"],
-      required: true,
     },
     photos: {
-      type: [String],
-      required: true,
+      type: String
     },
     like: {
       type: Number,
