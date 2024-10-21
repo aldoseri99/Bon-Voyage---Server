@@ -17,7 +17,16 @@ upload = multer({ storage: storage })
 
 const GetPost = async (req, res) => {
   try {
-    const post = await Post.find({}).populate('activities').populate('comments')
+    const post = await Post.find({})
+      .populate('activities')
+      .populate('User')
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'user',
+          select: 'username profilePic'
+        }
+      })
     res.send(post)
   } catch (error) {
     throw error
@@ -40,11 +49,12 @@ const CreatePost = async (req, res) => {
       like
     } = req.body
 
+    const userId = res.locals.payload.id
 
+    
     const photos = req.file ? req.file.filename : null
     
-    console.log(req.file);
-    
+
     const post = await Post.create({
       title,
       review,
@@ -57,16 +67,16 @@ const CreatePost = async (req, res) => {
       country,
       environment,
       like,
-      photos
+      photos,
+      User: userId
     })
-    res.send(post)
 
+    res.send(post)
   } catch (error) {
-    console.error("Error creating post:", error); // Log error details
-    res.status(500).send({ error: error.message }); // Send error response
+    console.error('Error creating post:', error) // Log error details
+    res.status(500).send({ error: error.message }) // Send error response
   }
 }
-
 
 const UpdatePost = async (req, res) => {
   try {
@@ -149,9 +159,33 @@ const LikePost = async (req, res) => {
 
 
 
+const GetPostsByUser = async (req, res) => {
+  try {
+    const userId = req.params.user_id
+    const posts = await Post.find({ User: userId })
+      .populate('activities')
+      .populate('comments')
+    res.send(posts)
+  } catch (error) {
+    console.error('Error fetching posts:', error)
+    res.send({ error: error.message })
+  }
+}
 
+const GetPostByFollow = async (req, res) => {
+  try {
+    const followings = req.params.user_following.split(',')
 
+    const posts = await Post.find({ User: { $in: followings } })
+      .populate('activities')
+      .populate('comments')
+      .populate('User')
 
+    res.send(posts)
+  } catch (error) {
+    res.status(500).send({ error: error.message })
+  }
+}
 
 module.exports = {
   GetPost,
@@ -160,4 +194,6 @@ module.exports = {
   DeletePost,
   PostDetail,
   LikePost,
+  GetPostsByUser,
+  GetPostByFollow
 }

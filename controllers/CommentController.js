@@ -2,34 +2,53 @@ const Comment = require("../models/Comment")
 const Post = require("../models/Post")
 
 const GetComments = async (req, res) => {
+  const postId = req.params.postId
+
   try {
-    const { postId } = req.params
-    const comments = await Comment.find({ post: postId })
-      .populate("user")
-      .populate("post")
+    const comments = await Comment.find({ post: postId }).populate(
+      "user",
+      "username profilePic"
+    )
+
     res.send(comments)
   } catch (error) {
-    res.send({ error: error.message })
+    console.error("Error fetching comments:", error)
+    res.status(500).send({ error: error.message })
   }
 }
 
 const CreateComment = async (req, res) => {
+  if (!res.locals.payload || !res.locals.payload.id) {
+    return res.status(401).send({ error: "Unauthorized: User ID not found." })
+  }
   try {
-    const { title, content, user } = req.body
+    const { title, content } = req.body
     const postId = req.params.postId
-
-    const comment = await Comment.create({
-      title,
-      content,
-      post: postId,
-      user,
-    })
+    const userId = res.locals.payload.id
+    let comment
+    try {
+      comment = await Comment.create({
+        title,
+        content,
+        post: postId,
+        user: userId,
+      })
+    } catch (creationError) {
+      console.error("Error creating comment:", creationError)
+      return res.status(500).send({ error: "Failed to create comment." })
+    }
 
     await Post.findByIdAndUpdate(postId, { $push: { comments: comment._id } })
 
-    res.send(comment)
+    const populatedComment = await Comment.findById(comment._id).populate(
+      "user",
+      "username profilePic"
+    )
+
+    res.send(populatedComment)
   } catch (error) {
-    res.send({ error: error.message })
+    console.error("Error in CreateComment:", error)
+    res.status(500).send({ error: error.message })
   }
 }
 

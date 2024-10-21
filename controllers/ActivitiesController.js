@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 })
 
 // Initialize multer
-const upload = multer({ storage: storage })
+upload = multer({ storage: storage })
 
 const GetActivities = async (req, res) => {
   try {
@@ -36,7 +36,7 @@ const CreateActivities = async (req, res) => {
       cost,
       rate,
       photos,
-      post,
+      post: req.params.postId,
     })
 
     await Post.findByIdAndUpdate(post, { $push: { activities: activity._id } })

@@ -3,7 +3,7 @@ const router = express.Router()
 const controller = require("../controllers/ActivitiesController")
 
 router.get("/", controller.GetActivities)
-router.post("/", upload.array("photos"), controller.CreateActivities)
+router.post("/:postId", upload.array("photos"), controller.CreateActivities)
 router.put(
   "/:activities_id",
   upload.array("photos"),

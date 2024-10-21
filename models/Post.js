@@ -41,8 +41,8 @@ const postSchema = new mongoose.Schema(
     },
     photos: {
       type: String,
-    },
-    likedBy: {
+     },
+likedBy: {
       type: [mongoose.Schema.Types.ObjectId],
        ref: "User",
        default: [],
