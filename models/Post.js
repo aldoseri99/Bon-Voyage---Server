@@ -4,30 +4,30 @@ const postSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+      
     },
     review: {
       type: String,
-      required: true,
+      
     },
     cost: {
       type: Number,
-      required: true,
+      
     },
     rate: {
       type: Number,
       min: 1,
       max: 5,
-      required: true,
+      
     },
     weather: {
       type: String,
-      enum: ["Sunny", "Cloudy", "Rainy", "Snowy", "Windy"],
+  
       
     },
     temperature: {
       type: Number,
-      required: true,
+      
     },
     date: {
       type: Date,
@@ -38,10 +38,10 @@ const postSchema = new mongoose.Schema(
     },
     environment: {
       type: String,
-      enum: ["City", "Nature", "Beach", "Mountain", "Desert"],
+     
     },
     photos: {
-      type: [String]
+      type: String
     },
     like: {
       type: Number,
