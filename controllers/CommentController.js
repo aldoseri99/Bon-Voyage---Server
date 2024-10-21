@@ -15,16 +15,17 @@ const GetComments = async (req, res) => {
 
 const CreateComment = async (req, res) => {
   try {
-    const { title, content, post, user } = req.body
+    const { title, content, user } = req.body
+    const postId = req.params.postId
 
     const comment = await Comment.create({
       title,
       content,
-      post,
+      post: postId,
       user,
     })
 
-    await Post.findByIdAndUpdate(post, { $push: { comments: comment._id } })
+    await Post.findByIdAndUpdate(postId, { $push: { comments: comment._id } })
 
     res.send(comment)
   } catch (error) {
@@ -60,6 +61,11 @@ const DeleteComment = async (req, res) => {
     if (result.deletedCount === 0) {
       return res.send({ msg: "Comment not found" })
     }
+
+    await Post.updateMany(
+      { comments: commentId },
+      { $pull: { comments: commentId } }
+    )
 
     res.send({
       msg: "Comment Deleted",

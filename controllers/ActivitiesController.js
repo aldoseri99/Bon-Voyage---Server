@@ -77,11 +77,18 @@ const UpdateActivities = async (req, res) => {
 const DeleteActivities = async (req, res) => {
   try {
     const activityId = req.params.activities_id
+
+    // Delete the activity
     const result = await Activities.deleteOne({ _id: activityId })
 
     if (result.deletedCount === 0) {
-      return res.status(404).send({ msg: "Activity not found" })
+      return res.send({ msg: "Activity not found" })
     }
+
+    await Post.updateMany(
+      { activities: activityId },
+      { $pull: { activities: activityId } }
+    )
 
     res.send({
       msg: "Activity Deleted",
