@@ -4,30 +4,29 @@ const postSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      
+      required: true,
     },
     review: {
       type: String,
-      
+      required: true,
     },
     cost: {
       type: Number,
-      
+      required: true,
     },
     rate: {
       type: Number,
       min: 1,
       max: 5,
-      
+      required: true,
     },
     weather: {
       type: String,
-  
-      
+      required: true,
     },
     temperature: {
       type: Number,
-      
+      required: true,
     },
     date: {
       type: Date,
@@ -35,10 +34,10 @@ const postSchema = new mongoose.Schema(
     },
     country: {
       type: String,
+      required: true,
     },
     environment: {
       type: String,
-     
     },
     photos: {
       type: String
