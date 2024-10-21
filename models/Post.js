@@ -40,13 +40,13 @@ const postSchema = new mongoose.Schema(
       type: String,
     },
     photos: {
-      type: String
+      type: String,
     },
     like: {
       type: Number,
       default: 0,
     },
-    User: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
+    User: { type: mongoose.Schema.Types.ObjectId, ref: "User", required: true },
     activities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activities" }],
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   },
