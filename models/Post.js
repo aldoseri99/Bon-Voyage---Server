@@ -50,6 +50,7 @@ const postSchema = new mongoose.Schema(
       type: Number,
       default: 0,
     },
+    User: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
     activities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activities" }],
     comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
   },
