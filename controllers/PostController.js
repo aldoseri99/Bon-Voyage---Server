@@ -34,7 +34,6 @@ const CreatePost = async (req, res) => {
       title,
       review,
       cost,
-
       rate,
       weather,
       temperature,
@@ -44,6 +43,7 @@ const CreatePost = async (req, res) => {
       like,
     } = req.body
 
+
     const userId = res.locals.payload.id
 
     // Use req.file for a single file upload
@@ -51,12 +51,12 @@ const CreatePost = async (req, res) => {
 
     console.log(req.file)
 
+
     const post = await Post.create({
       title,
       review,
       cost,
       rate,
-
       weather,
       temperature,
       date,
@@ -66,12 +66,14 @@ const CreatePost = async (req, res) => {
       photos,
       User: userId,
     })
+
     console.log("User ID from token:", userId)
 
     res.send(post)
   } catch (error) {
     console.error("Error creating post:", error) // Log error details
     res.status(500).send({ error: error.message }) // Send error response
+
   }
 }
 
