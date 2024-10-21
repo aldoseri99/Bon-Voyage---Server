@@ -8,9 +8,6 @@ const storage = multer.diskStorage({
     cb(null, './public/profilePics/')
   },
   filename: (req, file, cb) => {
-    filename = 'test'
-    console.log(file.originalname)
-
     cb(null, Date.now() + file.originalname)
   }
 })
@@ -59,6 +56,7 @@ const Login = async (req, res) => {
     const user = await User.findOne({
       $or: [{ email: email }, { username: email }]
     })
+
     if (!user) {
       return res.send({
         message: 'No user with that email or username was found!'
@@ -111,7 +109,9 @@ const UpdatePassword = async (req, res) => {
         id: user._id,
         username: user.username,
         name: user.name,
-        email: user.email
+        email: user.email,
+        followings: user.followings,
+        profilePic: user.profilePic
       }
       return res.send({ status: 'Password Updated!', user: payload })
     }
@@ -128,17 +128,35 @@ const UpdatePassword = async (req, res) => {
 }
 const UpdateUser = async (req, res) => {
   try {
-    const { name, phone } = req.body
-    let user = await User.findByIdAndUpdate(req.params.user_id, {
-      name: name,
-      phone: phone
-    })
+    const { name, username } = req.body
+    const profilePic = req.file ? req.file.filename : null
+    console.log(profilePic)
+
+    let user
+    if (name) {
+      user = await User.findByIdAndUpdate(req.params.user_id, { name })
+    }
+    if (username) {
+      let existingUsername = await User.findOne({ username })
+      if (existingUsername) {
+        return res.send({
+          message: 'This username has already been taken!'
+        })
+      } else {
+        user = await User.findByIdAndUpdate(req.params.user_id, { username })
+      }
+    }
+    if (profilePic) {
+      user = await User.findByIdAndUpdate(req.params.user_id, { profilePic })
+    }
 
     let payload = {
       id: user._id,
       username: user.username,
       name: user.name,
-      email: user.email
+      email: user.email,
+      followings: user.followings,
+      profilePic: user.profilePic
     }
     return res.send({ status: 'User Updated!', user: payload })
   } catch (error) {
@@ -178,6 +196,15 @@ const GetAllUsers = async (req, res) => {
   res.send({ users })
 }
 
+const GetUserInfo = async (req, res) => {
+  try {
+    let user = await User.find({ _id: req.params.user_id })
+    res.send({ user })
+  } catch (error) {
+    throw error
+  }
+}
+
 module.exports = {
   Register,
   Login,
@@ -185,5 +212,6 @@ module.exports = {
   UpdateUser,
   CheckSession,
   Follow,
-  GetAllUsers
+  GetAllUsers,
+  GetUserInfo
 }
