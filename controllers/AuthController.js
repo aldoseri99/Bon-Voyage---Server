@@ -135,7 +135,7 @@ const CheckSession = async (req, res) => {
   res.send(payload)
 }
 
-const follow = async (req, res) => {
+const Follow = async (req, res) => {
   try {
     let user = await User.findByIdAndUpdate(req.params.user_id, {
       followings: req.body
@@ -152,10 +152,8 @@ const follow = async (req, res) => {
   } catch (error) {}
 }
 
-const unfollow = async (req, res) => {}
-
-const getAllUsers = async (req, res) => {
-  let users = await User.find()
+const GetAllUsers = async (req, res) => {
+  let users = await User.find({ _id: { $ne: req.params.user_id } })
   res.send({ users })
 }
 
@@ -165,6 +163,6 @@ module.exports = {
   UpdatePassword,
   UpdateUser,
   CheckSession,
-  follow,
-  getAllUsers
+  Follow,
+  GetAllUsers
 }

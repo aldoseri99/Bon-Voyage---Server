@@ -23,7 +23,7 @@ const postSchema = new mongoose.Schema(
     weather: {
       type: String,
       enum: ["Sunny", "Cloudy", "Rainy", "Snowy", "Windy"],
-      required: true,
+      
     },
     temperature: {
       type: Number,
