@@ -1,10 +1,29 @@
 const User = require('../models/User')
 const middleware = require('../middleware')
+const Post = require('../models/Post')
+const multer = require('multer')
+
+const storage = multer.diskStorage({
+  destination: (req, file, cb) => {
+    cb(null, './public/profilePics/')
+  },
+  filename: (req, file, cb) => {
+    filename = 'test'
+    console.log(file.originalname)
+
+    cb(null, Date.now() + file.originalname)
+  }
+})
+
+// Initialize multer
+upload = multer({ storage: storage })
 
 const Register = async (req, res) => {
   try {
     // Extracts the necessary fields from the request body
-    const { email, password, name, username, profilePic } = req.body
+    const { email, password, name, username } = req.body
+    const profilePic = req.file ? req.file.filename : null
+
     // Hashes the provided password
     let passwordDigest = await middleware.hashPassword(password)
     // Checks if there has already been a user registered with that email
@@ -55,7 +74,8 @@ const Login = async (req, res) => {
         username: user.username,
         name: user.name,
         email: user.email,
-        followings: user.followings
+        followings: user.followings,
+        profilePic: user.profilePic
       }
       let token = middleware.createToken(payload)
 
@@ -145,7 +165,8 @@ const Follow = async (req, res) => {
       username: user.username,
       name: user.name,
       email: user.email,
-      followings: user.followings
+      followings: user.followings,
+      profilePic: user.profilePic
     }
 
     return res.send({ status: 'User Followed!', user: payload })
