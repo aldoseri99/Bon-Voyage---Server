@@ -4,7 +4,7 @@ const middleware = require('../middleware')
 
 router.get('/users/:user_id', controller.GetAllUsers)
 router.post('/login', controller.Login)
-router.post('/register', controller.Register)
+router.post('/register', upload.single('profilePic'), controller.Register)
 router.put(
   '/updatePass/:user_id',
   middleware.stripToken,
