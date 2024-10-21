@@ -1,16 +1,16 @@
-const Post = require("../models/Post")
-const multer = require("multer")
-const path = require("path")
+const Post = require('../models/Post')
+const multer = require('multer')
+const path = require('path')
 
 // Set up multer storage (as shown previously)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./public/uploadPost/")
+    cb(null, './public/uploadPost/')
   },
   filename: (req, file, cb) => {
-    filename = "test"
+    filename = 'test'
     cb(null, Date.now() + file.originalname)
-  },
+  }
 })
 
 // Initialize multer
@@ -18,7 +18,7 @@ upload = multer({ storage: storage })
 
 const GetPost = async (req, res) => {
   try {
-    const post = await Post.find({}).populate("activities").populate("comments")
+    const post = await Post.find({}).populate('activities').populate('comments')
     res.send(post)
   } catch (error) {
     throw error
@@ -31,8 +31,16 @@ const CreatePost = async (req, res) => {
       title,
       review,
       cost,
-      rate
-    } = req.body;
+
+      rate,
+      weather,
+      temperature,
+      date,
+      country,
+      environment,
+      like
+    } = req.body
+
 
     // Use req.file for a single file upload
     const photos = req.file ? [req.file.filename] : []; // Ensure this matches your front-end
@@ -42,9 +50,17 @@ const CreatePost = async (req, res) => {
       review,
       cost,
       rate,
+
+      weather,
+      temperature,
+      date,
+      country,
+      environment,
+      like,
       photos
-    });
-    res.send(post);
+    })
+    res.send(post)
+
   } catch (error) {
     console.error("Error creating post:", error); // Log error details
     res.status(500).send({ error: error.message }); // Send error response
@@ -62,11 +78,11 @@ const UpdatePost = async (req, res) => {
 
     const updatedPost = await Post.findByIdAndUpdate(postId, updates, {
       new: true,
-      runValidators: true,
+      runValidators: true
     })
 
     if (!updatedPost) {
-      return res.send({ msg: "Post not found" })
+      return res.send({ msg: 'Post not found' })
     }
 
     res.send(updatedPost)
@@ -79,10 +95,21 @@ const DeletePost = async (req, res) => {
   try {
     await Post.deleteOne({ _id: req.params.post_id })
     res.send({
-      msg: "Post Deleted",
+      msg: 'Post Deleted',
       payload: req.params.post_id,
-      status: "Ok",
+      status: 'Ok'
     })
+  } catch (error) {
+    throw error
+  }
+}
+
+const PostDetail = async (req, res) => {
+  try {
+    const post = await Post.find({ _id: req.params.post_id })
+      .populate('activities')
+      .populate('comments')
+    res.send(post)
   } catch (error) {
     throw error
   }
@@ -93,4 +120,5 @@ module.exports = {
   CreatePost,
   UpdatePost,
   DeletePost,
+  PostDetail
 }
