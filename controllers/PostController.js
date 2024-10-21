@@ -1,16 +1,16 @@
-const Post = require("../models/Post")
-const multer = require("multer")
-const path = require("path")
+const Post = require('../models/Post')
+const multer = require('multer')
+const path = require('path')
 
 // Set up multer storage (as shown previously)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
-    cb(null, "./public/uploadPost/")
+    cb(null, './public/uploadPost/')
   },
   filename: (req, file, cb) => {
-    __filename = "test"
+    __filename = 'test'
     cb(null, Date.now() + file.originalname)
-  },
+  }
 })
 
 // Initialize multer
@@ -19,14 +19,14 @@ upload = multer({ storage: storage })
 const GetPost = async (req, res) => {
   try {
     const post = await Post.find({})
-      .populate("activities")
-      .populate("User")
+      .populate('activities')
+      .populate('User')
       .populate({
-        path: "comments",
+        path: 'comments',
         populate: {
-          path: "user",
-          select: "username profilePic",
-        },
+          path: 'user',
+          select: 'username profilePic'
+        }
       })
     res.send(post)
   } catch (error) {
@@ -47,7 +47,7 @@ const CreatePost = async (req, res) => {
       date,
       country,
       environment,
-      like,
+      like
     } = req.body
 
     const userId = res.locals.payload.id
@@ -68,12 +68,12 @@ const CreatePost = async (req, res) => {
       environment,
       like,
       photos,
-      User: userId,
+      User: userId
     })
 
     res.send(post)
   } catch (error) {
-    console.error("Error creating post:", error) // Log error details
+    console.error('Error creating post:', error) // Log error details
     res.status(500).send({ error: error.message }) // Send error response
   }
 }
@@ -88,11 +88,11 @@ const UpdatePost = async (req, res) => {
 
     const updatedPost = await Post.findByIdAndUpdate(postId, updates, {
       new: true,
-      runValidators: true,
+      runValidators: true
     })
 
     if (!updatedPost) {
-      return res.send({ msg: "Post not found" })
+      return res.send({ msg: 'Post not found' })
     }
 
     res.send(updatedPost)
@@ -105,9 +105,9 @@ const DeletePost = async (req, res) => {
   try {
     await Post.deleteOne({ _id: req.params.post_id })
     res.send({
-      msg: "Post Deleted",
+      msg: 'Post Deleted',
       payload: req.params.post_id,
-      status: "Ok",
+      status: 'Ok'
     })
   } catch (error) {
     throw error
@@ -117,8 +117,8 @@ const DeletePost = async (req, res) => {
 const PostDetail = async (req, res) => {
   try {
     const post = await Post.find({ _id: req.params.post_id })
-      .populate("activities")
-      .populate("comments")
+      .populate('activities')
+      .populate('comments')
     res.send(post)
   } catch (error) {
     throw error
@@ -129,12 +129,27 @@ const GetPostsByUser = async (req, res) => {
   try {
     const userId = req.params.user_id
     const posts = await Post.find({ User: userId })
-      .populate("activities")
-      .populate("comments")
+      .populate('activities')
+      .populate('comments')
     res.send(posts)
   } catch (error) {
-    console.error("Error fetching posts:", error)
+    console.error('Error fetching posts:', error)
     res.send({ error: error.message })
+  }
+}
+
+const GetPostByFollow = async (req, res) => {
+  try {
+    const followings = req.params.user_following.split(',')
+
+    const posts = await Post.find({ User: { $in: followings } })
+      .populate('activities')
+      .populate('comments')
+      .populate('User')
+
+    res.send(posts)
+  } catch (error) {
+    res.status(500).send({ error: error.message })
   }
 }
 
@@ -145,4 +160,5 @@ module.exports = {
   DeletePost,
   PostDetail,
   GetPostsByUser,
+  GetPostByFollow
 }
