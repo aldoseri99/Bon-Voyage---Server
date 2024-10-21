@@ -55,8 +55,6 @@ const CreatePost = async (req, res) => {
     // Use req.file for a single file upload
     const photos = req.file ? req.file.filename : null // Ensure this matches your front-end
 
-    console.log(req.file)
-
     const post = await Post.create({
       title,
       review,
@@ -72,7 +70,6 @@ const CreatePost = async (req, res) => {
       photos,
       User: userId,
     })
-    console.log("User ID from token:", userId)
 
     res.send(post)
   } catch (error) {
