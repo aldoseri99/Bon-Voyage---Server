@@ -36,7 +36,7 @@ const CreateActivities = async (req, res) => {
       cost,
       rate,
       photos,
-      post,
+      post: req.params.postId,
     })
 
     await Post.findByIdAndUpdate(post, { $push: { activities: activity._id } })
