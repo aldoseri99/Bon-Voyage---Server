@@ -20,8 +20,14 @@ const GetPost = async (req, res) => {
   try {
     const post = await Post.find({})
       .populate("activities")
-      .populate("comments")
       .populate("User")
+      .populate({
+        path: "comments",
+        populate: {
+          path: "user",
+          select: "username profilePic",
+        },
+      })
     res.send(post)
   } catch (error) {
     throw error
