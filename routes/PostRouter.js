@@ -2,8 +2,9 @@ const express = require('express')
 const router = express.Router()
 const controller = require('../controllers/PostController')
 const middleware = require('../middleware/index')
+const { LikePost } = require('../controllers/PostController')
 
-// Get all posts
+
 router.get('/', controller.GetPost)
 
 // Create a post (requires authentication)
@@ -34,6 +35,7 @@ router.delete(
 
 // Get details of a specific post
 router.get('/details/:post_id', controller.PostDetail)
+router.patch('/like/:id', LikePost)
 
 // Optional: Get all posts by a specific user (if needed)
 router.get('/user/:user_id', controller.GetPostsByUser) // Ensure you have a controller function for this
