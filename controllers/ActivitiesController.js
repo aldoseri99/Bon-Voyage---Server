@@ -14,7 +14,7 @@ const storage = multer.diskStorage({
 })
 
 // Initialize multer
-const upload = multer({ storage: storage })
+upload = multer({ storage: storage })
 
 const GetActivities = async (req, res) => {
   try {
