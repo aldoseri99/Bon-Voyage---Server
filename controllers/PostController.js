@@ -2,7 +2,6 @@ const Post = require('../models/Post')
 const multer = require('multer')
 const path = require('path')
 
-// Set up multer storage (as shown previously)
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
     cb(null, './public/uploadPost/')
@@ -42,8 +41,7 @@ const CreatePost = async (req, res) => {
     } = req.body
 
 
-    // Use req.file for a single file upload
-    const photos = req.file ? req.file.filename : null // Ensure this matches your front-end
+    const photos = req.file ? req.file.filename : null
     
     console.log(req.file);
     
@@ -117,10 +115,49 @@ const PostDetail = async (req, res) => {
   }
 }
 
+const LikePost = async (req, res) => {
+  const postId = req.params.id;
+  const userId = req.body.userId; 
+
+  console.log("User ID for liking the post:", userId)
+
+  try {
+    const post = await Post.findById(postId);
+
+    if (!post) {
+      return res.status(404).send({ message: 'Post not found' });
+    }
+
+    const userIndex = post.likedBy.indexOf(userId);
+
+    if (userIndex === -1) {
+      post.likedBy.push(userId);
+      post.like += 1;
+    } else {
+      post.likedBy.splice(userIndex, 1);
+      post.like -= 1;
+    }
+
+    const updatedPost = await post.save();
+
+    res.send(updatedPost);
+  } catch (error) {
+    console.error('Error updating like count:', error);
+    res.status(500).send({ error: error.message });
+  }
+};
+
+
+
+
+
+
+
 module.exports = {
   GetPost,
   CreatePost,
   UpdatePost,
   DeletePost,
-  PostDetail
+  PostDetail,
+  LikePost,
 }
