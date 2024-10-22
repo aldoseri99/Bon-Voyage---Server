@@ -24,7 +24,9 @@ router.get(
   middleware.verifyToken,
   controller.CheckSession
 )
-router.put('/follow/:user_id', controller.Follow)
 router.put('/edit/:user_id', upload.single('profilePic'), controller.UpdateUser)
 router.get('/search/:query', controller.SearchUsers)
+
+router.post('/follow/:userId/:followId', controller.ToggleFollow)
+router.get('/follow/:userId', controller.GetFollowings)
 module.exports = router
