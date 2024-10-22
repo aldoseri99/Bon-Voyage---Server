@@ -179,6 +179,8 @@ const ToggleFollow = async (req, res) => {
 
     const user = await User.findById(userId)
     if (!user) {
+      console.log('no user')
+
       return res.send({ message: 'no user' })
     }
     const isFollowed = user.followings.includes(followId)
@@ -196,7 +198,7 @@ const ToggleFollow = async (req, res) => {
       return res.send({ message: 'followed Successfully' })
     }
   } catch (error) {
-    res.send({ message: 'Error sadly' })
+    res.send({ message: error })
   }
 }
 

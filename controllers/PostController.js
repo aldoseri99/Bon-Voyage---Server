@@ -24,8 +24,7 @@ const GetPost = async (req, res) => {
       .populate({
         path: 'comments',
         populate: {
-          path: 'user',
-          select: 'username profilePic'
+          path: 'user'
         }
       })
       .sort({ createdAt: -1 })
