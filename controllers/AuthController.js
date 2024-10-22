@@ -130,7 +130,6 @@ const UpdateUser = async (req, res) => {
   try {
     const { name, username } = req.body
     const profilePic = req.file ? req.file.filename : null
-    console.log(profilePic)
 
     let user
     if (name) {
@@ -211,7 +210,6 @@ const SearchUsers = async (req, res) => {
     if (!query || query.length < 1) {
       return res.send({ message: 'Search cannot be empty' })
     }
-    console.log(req.params.query)
     let users = await User.find({
       username: { $regex: query, $options: 'i' }
     }).limit(10)

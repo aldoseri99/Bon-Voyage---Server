@@ -4,7 +4,6 @@ const controller = require('../controllers/PostController')
 const middleware = require('../middleware/index')
 const { LikePost } = require('../controllers/PostController')
 
-
 router.get('/', controller.GetPost)
 
 // Create a post (requires authentication)
@@ -41,5 +40,9 @@ router.patch('/like/:id', LikePost)
 router.get('/user/:user_id', controller.GetPostsByUser) // Ensure you have a controller function for this
 
 router.get('/followed/:user_following', controller.GetPostByFollow)
+
+router.post('/:userId/bookmark/:postId', controller.ToggleBookmark)
+
+router.get('/bookmark/:userId', controller.GetBookmarkedPost)
 
 module.exports = router
