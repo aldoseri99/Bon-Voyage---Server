@@ -1,4 +1,4 @@
-const mongoose = require("mongoose")
+const mongoose = require('mongoose')
 
 const userSchema = new mongoose.Schema(
   {
@@ -10,19 +10,25 @@ const userSchema = new mongoose.Schema(
     followings: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "User",
-      },
+        ref: 'User'
+      }
     ],
     post: [
       {
         type: mongoose.Schema.Types.ObjectId,
-        ref: "Post",
-      },
+        ref: 'Post'
+      }
     ],
+    bookmarks: [
+      {
+        type: mongoose.Schema.Types.ObjectId,
+        ref: 'Post'
+      }
+    ]
   },
   { timestamps: true }
 )
 
-const User = mongoose.model("User", userSchema)
+const User = mongoose.model('User', userSchema)
 
 module.exports = User
