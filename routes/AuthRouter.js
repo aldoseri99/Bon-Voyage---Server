@@ -26,4 +26,5 @@ router.get(
 )
 router.put('/follow/:user_id', controller.Follow)
 router.put('/edit/:user_id', upload.single('profilePic'), controller.UpdateUser)
+router.get('/search/:query', controller.SearchUsers)
 module.exports = router

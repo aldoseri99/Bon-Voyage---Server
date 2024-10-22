@@ -205,6 +205,26 @@ const GetUserInfo = async (req, res) => {
   }
 }
 
+const SearchUsers = async (req, res) => {
+  try {
+    const query = req.params.query
+    if (!query || query.length < 1) {
+      return res.send({ message: 'Search cannot be empty' })
+    }
+    console.log(req.params.query)
+    let users = await User.find({
+      username: { $regex: query, $options: 'i' }
+    }).limit(10)
+    if (users.length > 0) {
+      res.send({ users, message: '' })
+    } else {
+      res.send({ users: [], message: 'No users found' })
+    }
+  } catch (err) {
+    res.status(500).send('Error while searching')
+  }
+}
+
 module.exports = {
   Register,
   Login,
@@ -213,5 +233,6 @@ module.exports = {
   CheckSession,
   Follow,
   GetAllUsers,
-  GetUserInfo
+  GetUserInfo,
+  SearchUsers
 }
