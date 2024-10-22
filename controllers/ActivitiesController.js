@@ -27,23 +27,38 @@ const GetActivities = async (req, res) => {
 
 const CreateActivities = async (req, res) => {
   try {
-    const { name, place, cost, rate, post } = req.body
+    const { name, place, cost, rate } = req.body
     const photos = req.files ? req.files.map((file) => file.filename) : []
+    const postId = req.params.postId
 
+    const post = await Post.findById(postId)
+    if (!post) {
+      return res.status(404).send({ msg: "Post not found" })
+    }
+
+    if (post.User.toString() !== res.locals.payload.id) {
+      return res
+        .status(403)
+        .send({ msg: "You are not authorized to add activities to this post" })
+    }
+
+    // Create the activity
     const activity = await Activities.create({
       name,
       place,
       cost,
       rate,
       photos,
-      post: req.params.postId,
+      post: postId,
     })
 
-    await Post.findByIdAndUpdate(post, { $push: { activities: activity._id } })
+    await Post.findByIdAndUpdate(postId, {
+      $push: { activities: activity._id },
+    })
 
     res.send(activity)
   } catch (error) {
-    res.send({ error: error.message })
+    res.status(500).send({ error: error.message })
   }
 }
 
@@ -77,10 +92,22 @@ const UpdateActivities = async (req, res) => {
 const DeleteActivities = async (req, res) => {
   try {
     const activityId = req.params.activities_id
+    const activity = await Activities.findById(activityId).populate("post")
 
-    // Delete the activity
+    if (!activity) {
+      return res.status(404).send({ msg: "Activity not found" })
+    }
+
+    // Get user ID from the token
+    const userId = res.locals.payload.id
+
+    if (activity.post.User.toString() !== userId.toString()) {
+      return res
+        .status(403)
+        .send({ msg: "Not authorized to delete this activity" })
+    }
+
     const result = await Activities.deleteOne({ _id: activityId })
-
     if (result.deletedCount === 0) {
       return res.send({ msg: "Activity not found" })
     }
@@ -96,7 +123,8 @@ const DeleteActivities = async (req, res) => {
       status: "Ok",
     })
   } catch (error) {
-    res.send({ error: error.message })
+    console.error("Error deleting activity:", error)
+    res.status(500).send({ error: error.message })
   }
 }
 
