@@ -28,6 +28,7 @@ const GetPost = async (req, res) => {
           select: 'username profilePic'
         }
       })
+      .sort({ createdAt: -1 })
     res.send(post)
   } catch (error) {
     throw error
@@ -160,6 +161,7 @@ const GetPostsByUser = async (req, res) => {
     const posts = await Post.find({ User: userId })
       .populate('activities')
       .populate('comments')
+      .sort({ createdAt: -1 })
     res.send(posts)
   } catch (error) {
     console.error('Error fetching posts:', error)
@@ -175,6 +177,7 @@ const GetPostByFollow = async (req, res) => {
       .populate('activities')
       .populate('comments')
       .populate('User')
+      .sort({ createdAt: -1 })
 
     res.send(posts)
   } catch (error) {
@@ -219,7 +222,6 @@ const GetBookmarkedPost = async (req, res) => {
     if (!user) {
       return res.send({ message: 'no user' })
     }
-    console.log(user.bookmarks)
 
     return res.send({ bookmarks: user.bookmarks })
   } catch (error) {}
