@@ -25,12 +25,7 @@ router.put(
 )
 
 // Delete a post (requires authentication)
-router.delete(
-  '/:post_id',
-  middleware.stripToken,
-  middleware.verifyToken,
-  controller.DeletePost
-)
+router.delete('/:post_id', controller.DeletePost)
 
 // Get details of a specific post
 router.get('/details/:post_id', controller.PostDetail)
