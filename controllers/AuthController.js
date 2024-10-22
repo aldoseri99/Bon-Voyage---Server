@@ -190,6 +190,45 @@ const Follow = async (req, res) => {
   } catch (error) {}
 }
 
+const ToggleFollow = async (req, res) => {
+  try {
+    const { userId, followId } = req.params
+    console.log(userId + '/' + followId)
+
+    const user = await User.findById(userId)
+    if (!user) {
+      return res.send({ message: 'no user' })
+    }
+    const isFollowed = user.followings.includes(followId)
+    if (isFollowed) {
+      user.followings = user.followings.filter(
+        (follow) => follow.toString() !== followId
+      )
+      await user.save()
+
+      return res.send({ message: 'Unfollow' })
+    } else {
+      user.followings.push(followId)
+      await user.save()
+
+      return res.send({ message: 'followed Successfully' })
+    }
+  } catch (error) {
+    res.send({ message: 'Error sadly' })
+  }
+}
+
+const GetFollowings = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const user = await User.findById(userId).populate('followings')
+    if (!user) {
+      return res.send({ message: 'no user' })
+    }
+    return res.send({ followings: user.followings })
+  } catch (error) {}
+}
+
 const GetAllUsers = async (req, res) => {
   let users = await User.find({ _id: { $ne: req.params.user_id } })
   res.send({ users })
@@ -232,5 +271,7 @@ module.exports = {
   Follow,
   GetAllUsers,
   GetUserInfo,
-  SearchUsers
+  SearchUsers,
+  ToggleFollow,
+  GetFollowings
 }
