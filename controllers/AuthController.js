@@ -172,24 +172,6 @@ const CheckSession = async (req, res) => {
   res.send(payload)
 }
 
-const Follow = async (req, res) => {
-  try {
-    let user = await User.findByIdAndUpdate(req.params.user_id, {
-      followings: req.body
-    })
-    let payload = {
-      id: user._id,
-      username: user.username,
-      name: user.name,
-      email: user.email,
-      followings: user.followings,
-      profilePic: user.profilePic
-    }
-
-    return res.send({ status: 'User Followed!', user: payload })
-  } catch (error) {}
-}
-
 const ToggleFollow = async (req, res) => {
   try {
     const { userId, followId } = req.params
@@ -268,7 +250,6 @@ module.exports = {
   UpdatePassword,
   UpdateUser,
   CheckSession,
-  Follow,
   GetAllUsers,
   GetUserInfo,
   SearchUsers,
