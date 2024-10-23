@@ -130,7 +130,6 @@ const UpdateUser = async (req, res) => {
   try {
     const { name, username } = req.body
     const profilePic = req.file ? req.file.filename : null
-    console.log(profilePic)
 
     let user
     if (name) {
@@ -173,21 +172,44 @@ const CheckSession = async (req, res) => {
   res.send(payload)
 }
 
-const Follow = async (req, res) => {
+const ToggleFollow = async (req, res) => {
   try {
-    let user = await User.findByIdAndUpdate(req.params.user_id, {
-      followings: req.body
-    })
-    let payload = {
-      id: user._id,
-      username: user.username,
-      name: user.name,
-      email: user.email,
-      followings: user.followings,
-      profilePic: user.profilePic
-    }
+    const { userId, followId } = req.params
+    console.log(userId + '/' + followId)
 
-    return res.send({ status: 'User Followed!', user: payload })
+    const user = await User.findById(userId)
+    if (!user) {
+      console.log('no user')
+
+      return res.send({ message: 'no user' })
+    }
+    const isFollowed = user.followings.includes(followId)
+    if (isFollowed) {
+      user.followings = user.followings.filter(
+        (follow) => follow.toString() !== followId
+      )
+      await user.save()
+
+      return res.send({ message: 'Unfollow' })
+    } else {
+      user.followings.push(followId)
+      await user.save()
+
+      return res.send({ message: 'followed Successfully' })
+    }
+  } catch (error) {
+    res.send({ message: error })
+  }
+}
+
+const GetFollowings = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const user = await User.findById(userId).populate('followings')
+    if (!user) {
+      return res.send({ message: 'no user' })
+    }
+    return res.send({ followings: user.followings })
   } catch (error) {}
 }
 
@@ -205,13 +227,34 @@ const GetUserInfo = async (req, res) => {
   }
 }
 
+const SearchUsers = async (req, res) => {
+  try {
+    const query = req.params.query
+    if (!query || query.length < 1) {
+      return res.send({ message: 'Search cannot be empty' })
+    }
+    let users = await User.find({
+      username: { $regex: query, $options: 'i' }
+    }).limit(10)
+    if (users.length > 0) {
+      res.send({ users, message: '' })
+    } else {
+      res.send({ users: [], message: 'No users found' })
+    }
+  } catch (err) {
+    res.status(500).send('Error while searching')
+  }
+}
+
 module.exports = {
   Register,
   Login,
   UpdatePassword,
   UpdateUser,
   CheckSession,
-  Follow,
   GetAllUsers,
-  GetUserInfo
+  GetUserInfo,
+  SearchUsers,
+  ToggleFollow,
+  GetFollowings
 }

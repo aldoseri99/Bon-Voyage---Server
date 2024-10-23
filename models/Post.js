@@ -1,64 +1,64 @@
-const mongoose = require("mongoose");
+const mongoose = require('mongoose')
 
 const postSchema = new mongoose.Schema(
   {
     title: {
       type: String,
-      required: true,
+      required: true
     },
     review: {
       type: String,
-      required: true,
+      required: true
     },
     cost: {
       type: Number,
-      required: true,
+      required: true
     },
     rate: {
       type: Number,
       min: 1,
       max: 5,
-      required: true,
+      required: true
     },
     weather: {
       type: String,
-      required: true,
+      required: true
     },
     temperature: {
       type: Number,
-      required: true,
+      required: true
     },
     date: {
       type: Date,
-      default: Date.now,
+      default: Date.now
     },
     country: {
       type: String,
-      required: true,
+      required: true
     },
     environment: {
-      type: String,
+      type: String
     },
     photos: {
-      type: String,
-     },
-likedBy: {
+      type: String
+    },
+    likedBy: {
       type: [mongoose.Schema.Types.ObjectId],
-       ref: "User",
-       default: [],
+      ref: 'User',
+      default: []
     },
     like: {
       type: Number,
-      default: 0,
+      default: 0
     },
-    
-    User: { type: mongoose.Schema.Types.ObjectId, ref: "User" },
-    activities: [{ type: mongoose.Schema.Types.ObjectId, ref: "Activities" }],
-    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: "Comment" }],
+
+    User: { type: mongoose.Schema.Types.ObjectId, ref: 'User' },
+    activities: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Activities' }],
+    comments: [{ type: mongoose.Schema.Types.ObjectId, ref: 'Comment' }]
   },
   { timestamps: true }
-);
+)
 
-const Post = mongoose.model("Post", postSchema);
+const Post = mongoose.model('Post', postSchema)
 
-module.exports = Post;
+module.exports = Post

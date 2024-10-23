@@ -1,6 +1,7 @@
 const Post = require('../models/Post')
 const multer = require('multer')
 const path = require('path')
+const User = require('../models/User')
 
 const storage = multer.diskStorage({
   destination: (req, file, cb) => {
@@ -23,10 +24,10 @@ const GetPost = async (req, res) => {
       .populate({
         path: 'comments',
         populate: {
-          path: 'user',
-          select: 'username profilePic'
+          path: 'user'
         }
       })
+      .sort({ createdAt: -1 })
     res.send(post)
   } catch (error) {
     throw error
@@ -51,9 +52,7 @@ const CreatePost = async (req, res) => {
 
     const userId = res.locals.payload.id
 
-    
     const photos = req.file ? req.file.filename : null
-    
 
     const post = await Post.create({
       title,
@@ -126,38 +125,42 @@ const PostDetail = async (req, res) => {
 }
 
 const LikePost = async (req, res) => {
-  const postId = req.params.id;
-  const userId = req.body.userId; 
-
-  console.log("User ID for liking the post:", userId)
+  const postId = req.params.id
+  const userId = req.body.userId
 
   try {
-    const post = await Post.findById(postId);
+    const post = await Post.findById(postId)
+      .populate('activities')
+      .populate('User')
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'user'
+        }
+      })
 
     if (!post) {
-      return res.status(404).send({ message: 'Post not found' });
+      return res.status(404).send({ message: 'Post not found' })
     }
 
-    const userIndex = post.likedBy.indexOf(userId);
+    const userIndex = post.likedBy.indexOf(userId)
 
     if (userIndex === -1) {
-      post.likedBy.push(userId);
-      post.like += 1;
+      post.likedBy.push(userId)
+      post.like += 1
     } else {
-      post.likedBy.splice(userIndex, 1);
-      post.like -= 1;
+      post.likedBy.splice(userIndex, 1)
+      post.like -= 1
     }
 
-    const updatedPost = await post.save();
+    const updatedPost = await post.save()
 
-    res.send(updatedPost);
+    res.send(updatedPost)
   } catch (error) {
-    console.error('Error updating like count:', error);
-    res.status(500).send({ error: error.message });
+    console.error('Error updating like count:', error)
+    res.status(500).send({ error: error.message })
   }
-};
-
-
+}
 
 const GetPostsByUser = async (req, res) => {
   try {
@@ -165,6 +168,7 @@ const GetPostsByUser = async (req, res) => {
     const posts = await Post.find({ User: userId })
       .populate('activities')
       .populate('comments')
+      .sort({ createdAt: -1 })
     res.send(posts)
   } catch (error) {
     console.error('Error fetching posts:', error)
@@ -180,11 +184,54 @@ const GetPostByFollow = async (req, res) => {
       .populate('activities')
       .populate('comments')
       .populate('User')
+      .sort({ createdAt: -1 })
 
     res.send(posts)
   } catch (error) {
     res.status(500).send({ error: error.message })
   }
+}
+
+const ToggleBookmark = async (req, res) => {
+  try {
+    const { userId, postId } = req.params
+    const user = await User.findById(userId)
+    if (!user) {
+      return res.send({ message: 'no user' })
+    }
+
+    const post = await Post.findById(postId)
+    if (!post) {
+      return res.send({ message: 'no post' })
+    }
+    const isBookmarked = user.bookmarks.includes(postId)
+    if (isBookmarked) {
+      user.bookmarks = user.bookmarks.filter(
+        (bookmark) => bookmark.toString() !== postId
+      )
+      await user.save()
+
+      return res.send({ message: 'Post Already Bookmarked' })
+    } else {
+      user.bookmarks.push(postId)
+      await user.save()
+      return res.send({ message: 'Bookmark Successfully' })
+    }
+  } catch (error) {
+    res.send({ message: 'Error sadly' })
+  }
+}
+
+const GetBookmarkedPost = async (req, res) => {
+  try {
+    const { userId } = req.params
+    const user = await User.findById(userId).populate('bookmarks')
+    if (!user) {
+      return res.send({ message: 'no user' })
+    }
+
+    return res.send({ bookmarks: user.bookmarks })
+  } catch (error) {}
 }
 
 module.exports = {
@@ -195,5 +242,7 @@ module.exports = {
   PostDetail,
   LikePost,
   GetPostsByUser,
-  GetPostByFollow
+  GetPostByFollow,
+  ToggleBookmark,
+  GetBookmarkedPost
 }
