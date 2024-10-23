@@ -153,7 +153,6 @@ const UpdateUser = async (req, res) => {
     if (profilePic) {
       user = await User.findByIdAndUpdate(req.params.user_id, { profilePic })
     }
-
     let payload = {
       id: user._id,
       username: user.username,
@@ -180,7 +179,6 @@ const CheckSession = async (req, res) => {
 const ToggleFollow = async (req, res) => {
   try {
     const { userId, followId } = req.params
-    console.log(userId + '/' + followId)
 
     const user = await User.findById(userId)
     if (!user) {
