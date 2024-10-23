@@ -225,7 +225,13 @@ const ToggleBookmark = async (req, res) => {
 const GetBookmarkedPost = async (req, res) => {
   try {
     const { userId } = req.params
-    const user = await User.findById(userId).populate('bookmarks')
+    const user = await User.findById(userId).populate({
+      path: 'bookmarks',
+      populate: {
+        path: 'User'
+      }
+    })
+
     if (!user) {
       return res.send({ message: 'no user' })
     }
