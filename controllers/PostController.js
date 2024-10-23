@@ -116,8 +116,14 @@ const DeletePost = async (req, res) => {
 const PostDetail = async (req, res) => {
   try {
     const post = await Post.find({ _id: req.params.post_id })
+      .populate('User')
       .populate('activities')
-      .populate('comments')
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'user'
+        }
+      })
     res.send(post)
   } catch (error) {
     throw error
