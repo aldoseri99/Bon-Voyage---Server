@@ -116,8 +116,14 @@ const DeletePost = async (req, res) => {
 const PostDetail = async (req, res) => {
   try {
     const post = await Post.find({ _id: req.params.post_id })
+      .populate('User')
       .populate('activities')
-      .populate('comments')
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'user'
+        }
+      })
     res.send(post)
   } catch (error) {
     throw error
@@ -225,7 +231,13 @@ const ToggleBookmark = async (req, res) => {
 const GetBookmarkedPost = async (req, res) => {
   try {
     const { userId } = req.params
-    const user = await User.findById(userId).populate('bookmarks')
+    const user = await User.findById(userId).populate({
+      path: 'bookmarks',
+      populate: {
+        path: 'User'
+      }
+    })
+
     if (!user) {
       return res.send({ message: 'no user' })
     }

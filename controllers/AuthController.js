@@ -54,7 +54,10 @@ const Login = async (req, res) => {
   try {
     const { email, password } = req.body
     const user = await User.findOne({
-      $or: [{ email: email }, { username: email }]
+      $or: [
+        { email: { $regex: new RegExp(email, 'i') } },
+        { username: { $regex: new RegExp(email, 'i') } }
+      ]
     })
 
     if (!user) {
@@ -136,7 +139,9 @@ const UpdateUser = async (req, res) => {
       user = await User.findByIdAndUpdate(req.params.user_id, { name })
     }
     if (username) {
-      let existingUsername = await User.findOne({ username })
+      let existingUsername = await User.findOne({
+        username: { $regex: new RegExp(username, 'i') }
+      })
       if (existingUsername) {
         return res.send({
           message: 'This username has already been taken!'
@@ -148,7 +153,6 @@ const UpdateUser = async (req, res) => {
     if (profilePic) {
       user = await User.findByIdAndUpdate(req.params.user_id, { profilePic })
     }
-
     let payload = {
       id: user._id,
       username: user.username,
@@ -175,7 +179,6 @@ const CheckSession = async (req, res) => {
 const ToggleFollow = async (req, res) => {
   try {
     const { userId, followId } = req.params
-    console.log(userId + '/' + followId)
 
     const user = await User.findById(userId)
     if (!user) {
