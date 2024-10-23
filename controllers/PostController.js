@@ -130,6 +130,14 @@ const LikePost = async (req, res) => {
 
   try {
     const post = await Post.findById(postId)
+      .populate('activities')
+      .populate('User')
+      .populate({
+        path: 'comments',
+        populate: {
+          path: 'user'
+        }
+      })
 
     if (!post) {
       return res.status(404).send({ message: 'Post not found' })
